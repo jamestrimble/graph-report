@@ -81,13 +81,16 @@ if __name__ == "__main__":
     sections = []
 
     with open('templates/section.tex', 'r') as f:
-        section_template = "\n".join(line for line in f.readlines()) + "\n"
+        section_template = "".join(line for line in f.readlines())
 
     for filename in sys.argv[1:]:
+        print "Processing {}".format(filename)
+
         basename = os.path.basename(filename)
         dot_pos = basename.find('.')
         if dot_pos != -1:
             basename = basename[:dot_pos]
+        basename_escaped = basename.replace("_", "\\_")
 
         with open(filename, "r") as f:
             g = read_instance([line for line in f.readlines()])
@@ -122,12 +125,13 @@ if __name__ == "__main__":
 
         sections.append((section_template
                 .replace("*GRAPHNAME*", basename)
+                .replace("*GRAPHNAMEESCAPED*", basename_escaped)
                 .replace("*N*", str(g.n))
                 .replace("*M*", str(num_edges))
                 .replace("*DENSITY*", "{0:.2f}".format(density))))
 
     with open('templates/report.tex', 'r') as f:
-        report = "\n".join(line for line in f.readlines()) + "\n"
+        report = "".join(line for line in f.readlines())
 
     report = report.replace("*SECTIONS*", "\n".join(sections))
 
